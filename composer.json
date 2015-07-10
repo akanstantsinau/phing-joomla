@@ -1,5 +1,5 @@
 {
-    "name": "phing/phing-joomla",
+    "name": "joomboss/phing-joomla",
     "type": "library",
     "description": "Phing Joomla plugins",
     "keywords": ["Phing", "Joomla", "PHP", "CI"],
