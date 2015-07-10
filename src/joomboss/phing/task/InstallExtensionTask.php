@@ -1,7 +1,7 @@
 <?php
-require_once "phing/Task.php";
+namespace joomboss\phing\task;
 
-class InstallExtensionTask extends Task {
+class InstallExtensionTask extends \Task {
 
   /**
    * The message passed in the buildfile.
