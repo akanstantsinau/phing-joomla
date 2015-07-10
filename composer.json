@@ -1,0 +1,16 @@
+{
+    "name": "phing/phing-joomla",
+    "type": "library",
+    "description": "Phing Joomla plugins",
+    "keywords": ["Phing", "Joomla", "PHP", "CI"],
+    "homepage": "https://github.com/akanstantsinau/phing-joomla",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "akanstantsinau",
+            "email": "joomboss@gmail.com",
+            "homepage": "http://joomboss.com",
+            "role": "Developer"
+        }
+    ]
+}
