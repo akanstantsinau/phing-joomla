@@ -54,10 +54,10 @@ class InstallExtensionTask extends \Task {
       $j = new Joomla2Client($this->url);
     }
     if(!$j->login($this->user, $this->password)){
-      throw new Exception($j->getErrorMessage());
+      throw new \Exception($j->getErrorMessage());
     }
     if( !$j->installComponent($this->source, $this->ftpUser, $this->ftpPassword )){
-      throw new Exception($j->getErrorMessage());
+      throw new \Exception($j->getErrorMessage());
     }
   }
 }
@@ -104,7 +104,8 @@ class JoomlaClient{
     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $body = curl_exec($ch);
-    if(strpos($body, "Edit User") !== false || strpos($body, "User Manager")){
+    if(strpos($body, "Edit User") !== false || strpos($body, "User Manager") !== false ||
+        strpos($body, "Control Panel") !== false){
       return true;
     }else{
       $this->setErrorMessage("Unable to login");

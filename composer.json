@@ -1,5 +1,6 @@
 {
     "name": "joomboss/phing-joomla",
+    "version": "1.0.1",
     "type": "library",
     "description": "Phing Joomla plugins",
     "keywords": ["Phing", "Joomla", "PHP", "CI"],
