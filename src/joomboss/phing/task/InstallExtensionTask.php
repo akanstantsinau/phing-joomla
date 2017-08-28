@@ -104,8 +104,7 @@ class JoomlaClient{
     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $body = curl_exec($ch);
-    if(strpos($body, "Edit User") !== false || strpos($body, "User Manager") !== false ||
-        strpos($body, "Control Panel") !== false){
+    if(strpos($body, "Edit User") !== false || strpos($body, "User Manager") || strpos($body, "Control Panel") !== false){
       return true;
     }else{
       $this->setErrorMessage("Unable to login");
@@ -161,6 +160,16 @@ class Joomla2Client extends JoomlaClient{
   public function __construct($url){
     parent::__construct($url);
   }
+
+  var $error_markers = array(
+      "<div class=\"alert alert-error\">",
+      "<dd class=\"error message fade\">"
+  );
+
+  var $error_message_regexps = array(
+      "/<dd class=\"error message fade\">\\s*<ul>\\s*<li>(.*?)<\\/li>/i",
+      "/<div class=\"alert-message\">(.*?)<\\/div>/i"
+  );
   public function installComponent($packageFile, $ftpUser, $ftpPassword){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $this->baseUrl."?option=com_installer");
@@ -170,16 +179,16 @@ class Joomla2Client extends JoomlaClient{
     $token = $this->getToken($body);
     //echo $token;
     $params = array(
-        "install_package"=>"@".$packageFile,
+        "install_package"=>new \CURLFile($packageFile),
         $token=>1,
         "installtype"=>"upload",
         "task"=>"install.install",
-        "option"=>"com_installer",
-        "username"=>$ftpUser,
-        "password"=>$ftpPassword
+        "option"=>"com_installer"//,
+        //"username"=>$ftpUser,
+        //"password"=>$ftpPassword
     );
-
     $ch = curl_init();
+    curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
     curl_setopt($ch, CURLOPT_URL, $this->baseUrl."?option=com_installer&view=install");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt ($ch, CURLOPT_COOKIEFILE, $this->cookieFile);
@@ -187,13 +196,25 @@ class Joomla2Client extends JoomlaClient{
     curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $body = curl_exec($ch);
-    preg_match("/<dd class=\"error message fade\">\\s*<ul>\\s*<li>(.*?)<\\/li>/i", $body, $matches);
-    if(isset($matches[1]) && $matches[1]){
-      $this->setErrorMessage($matches[1]);
-      return false;
-    }else{
-      return true;
+    
+    $success = true;
+    $message = "";
+    foreach($this->error_markers as $error_marker){
+        if(strpos($body, $error_marker)!==false){
+            foreach($this->error_message_regexps as $regexp){
+              preg_match_all($regexp, $body, $matches);
+              if(isset($matches[1]) && is_array($matches[1])){
+                  var_dump($matches[1]);
+                  foreach($matches[1] as $match){
+                    $message .= $match . "\n";
+                  }
+              }
+            }
+            $this->setErrorMessage($message);
+            return false;
+        }
     }
+    return true;
   }
 }
 
